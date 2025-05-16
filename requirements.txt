@@ -1,0 +1,11 @@
+# DNS缓存工具必需依赖
+dnspython==2.2.1        # 提供dns.resolver
+requests==2.28.1        # 用于HTTP请求
+beautifulsoup4==4.11.1  # 用于HTML解析
+urllib3==1.26.12        # requests的依赖
+certifi>=2021.10.8      # requests的依赖
+charset-normalizer>=2.0.0  # requests的依赖
+idna>=2.8               # requests的依赖
+soupsieve>=1.2          # beautifulsoup4的依赖
+setuptools>=42.0.0
+wheel>=0.37.0 
