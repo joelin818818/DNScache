@@ -1,0 +1,69 @@
+name: Build and Release DNSCache
+
+on:
+  push:
+    tags:
+      - 'v*'  # 推送标签时触发，如v1.0.0
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install nuitka ordered-set zstandard
+
+      - name: Install MinGW (needed for Nuitka)
+        run: |
+          choco install mingw -y
+
+      - name: Build with Nuitka
+        run: |
+          python -m nuitka --standalone --onefile --follow-imports --plugin-enable=numpy --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ github.ref_name }}" --windows-product-version="${{ github.ref_name }}" --output-dir=dist dns_cache_tool.py
+
+      - name: Create version info
+        run: |
+          echo "版本: ${{ github.ref_name }}" > dist/version.txt
+          echo "构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> dist/version.txt
+          echo "提交: ${{ github.sha }}" >> dist/version.txt
+
+      - name: Create zip archive
+        run: |
+          cd dist
+          Compress-Archive -Path dns_cache_tool.exe, version.txt -DestinationPath DNSCache_${{ github.ref_name }}.zip
+          cd ..
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/DNSCache_${{ github.ref_name }}.zip
+            dist/dns_cache_tool.exe
+          draft: false
+          prerelease: false
+          name: DNSCache ${{ github.ref_name }}
+          body: |
+            DNS缓存工具 ${{ github.ref_name }} 发布
+            
+            ## 下载
+            - [完整程序包 (zip)](DNSCache_${{ github.ref_name }}.zip)
+            - [单文件可执行程序 (exe)](dns_cache_tool.exe)
+            
+            ## 更新内容
+            - 自动构建版本
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
