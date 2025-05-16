@@ -1,51 +1,51 @@
-名字: 构建和发布 DNSCache
+name: Build-DNSCache
 
 on:
   push:
-    标签:
-      - 'v*'  # 推送标签时触发，如 v1.0.0
-  workflow_dispatch:  # 允许手动触发
+    tags:
+      - 'v*'  # Push tags matching v*, i.e. v1.0.0
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - 名字: 检出代码
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - 名字: 设置 Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - 名字: 安装依赖
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install nuitka ordered-set zstandard
 
-      - 名字: 安装 MinGW（Nuitka 所需）
+      - name: Install MinGW for Nuitka
         run: |
           choco install mingw -y
 
-      - 名字: 使用 Nuitka 构建
+      - name: Build with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --follow-imports --plugin-enable=numpy --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS 缓存工具" --assume-yes-for-downloads --output-dir=dist dns_cache_tool.py
+          python -m nuitka --standalone --onefile --follow-imports --plugin-enable=numpy --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --assume-yes-for-downloads --output-dir=dist dns_cache_tool.py
 
-      - 名字: 创建版本信息
+      - name: Create version info
         run: |
           echo "版本: ${{ github.ref_name }}" > dist/version.txt
           echo "构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> dist/version.txt
           echo "提交: ${{ github.sha }}" >> dist/version.txt
 
-      - 名字: 创建压缩包
+      - name: Create archive
         run: |
           cd dist
           Compress-Archive -Path dns_cache_tool.exe, version.txt -DestinationPath DNSCache_${{ github.ref_name }}.zip
           cd ..
 
-      - 名字: 创建发布
+      - name: Create release
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -53,10 +53,10 @@ jobs:
           files: |
             dist/DNSCache_${{ github.ref_name }}.zip
             dist/dns_cache_tool.exe
-          草案: false
+          draft: false
           prerelease: false
-          名字: DNSCache ${{ github.ref_name }}
-          内容: |
+          name: DNSCache ${{ github.ref_name }}
+          body: |
             DNS缓存工具 ${{ github.ref_name }} 发布
             
             ## 下载
