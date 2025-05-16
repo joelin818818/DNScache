@@ -14,8 +14,17 @@
 - 🔎 增强的域名提取能力，支持从JavaScript、CSS等资源中提取域名
 - ⚙️ 可自定义配置文件，调整查询速率、线程数等参数
 - 🚀 内置性能测试工具，可帮助找出最佳参数设置
+- 📦 支持打包为独立可执行文件，可在无Python环境的系统上运行
 
 ## 📥 安装
+
+### 方法一：直接下载可执行文件
+
+1. 前往 [Releases](https://github.com/your-username/DNSCache/releases) 页面
+2. 下载最新版本的可执行文件（`.exe`）或完整程序包（`.zip`）
+3. 直接运行，无需安装Python环境
+
+### 方法二：源码安装
 
 1. 确保您已安装Python 3.6或更高版本 🐍
 2. 克隆或下载此仓库 📦
@@ -26,6 +35,12 @@ pip install -r requirements.txt
 ```
 
 ## 🎮 使用方法
+
+### 使用可执行文件
+
+直接双击运行下载的`.exe`文件即可。
+
+### 使用源码
 
 运行程序:
 
@@ -62,6 +77,38 @@ python dns_cache_tool.py
 - **Export**: 导出相关设置，如默认导出格式等
 
 您可以通过主菜单的"配置设置"选项来修改这些设置。
+
+## 📦 构建可执行文件
+
+### 使用自动构建（GitHub Actions）
+
+当推送带有版本标签（如`v1.0.0`）的提交时，GitHub Actions会自动构建可执行文件并发布到Releases页面。
+
+### 手动构建
+
+项目提供了一个构建脚本`build.py`，可以用于生成独立可执行文件：
+
+```bash
+# 基本构建
+python build.py
+
+# 指定版本号
+python build.py --version v1.0.0
+
+# 指定图标文件
+python build.py --icon path/to/icon.ico
+
+# 输出为目录而非单文件
+python build.py --no-onefile
+```
+
+构建需要安装Nuitka和相关依赖：
+
+```bash
+pip install nuitka ordered-set zstandard
+```
+
+Windows用户还需安装MinGW。
 
 ## ⚠️ 注意事项
 
