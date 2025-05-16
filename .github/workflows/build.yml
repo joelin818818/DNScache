@@ -1,9 +1,9 @@
-name: Build-DNSCache
+名字: Build-DNSCache
 run-name: Build ${{ github.ref_name }} for DNSCache
 
 on:
   push:
-    tags:
+    标签:
       - 'v*'  # Push tags matching v*, i.e. v1.0.0
   workflow_dispatch:  # Manual trigger
 
@@ -11,26 +11,26 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
+      - 名字: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Python
+      - 名字: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install dependencies
+      - 名字: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install nuitka ordered-set zstandard
 
-      - name: Install MinGW for Nuitka
+      - 名字: Install MinGW for Nuitka
         run: |
           choco install mingw -y
 
-      - name: Generate version from date
+      - 名字: Generate version from date
         id: generate_version
         run: |
           $date = Get-Date
@@ -38,24 +38,24 @@ jobs:
           echo "DATE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo "Using version from date: $version"
 
-      - name: Build with Nuitka
+      - 名字: Build with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --follow-imports --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ env.DATE_VERSION }}" --windows-product-version="${{ env.DATE_VERSION }}" --assume-yes-for-downloads --output-dir=dist dns_cache_tool.py
+          python -m nuitka --standalone --onefile --follow-imports --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ env.DATE_VERSION }}" --windows-product-version="${{ env.DATE_VERSION }}" --assume-yes-for-downloads --show-progress --show-scons --show-memory --verbose --output-dir=dist dns_cache_tool.py
 
-      - name: Create version info
+      - 名字: Create version info
         run: |
           echo "版本: ${{ github.ref_name }}" > dist/version.txt
           echo "构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> dist/version.txt
           echo "构建版本: ${{ env.DATE_VERSION }}" >> dist/version.txt
           echo "提交: ${{ github.sha }}" >> dist/version.txt
 
-      - name: Create archive
+      - 名字: Create archive
         run: |
           cd dist
           Compress-Archive -Path dns_cache_tool.exe, version.txt -DestinationPath DNSCache_${{ github.ref_name }}.zip
           cd ..
 
-      - name: Create release
+      - 名字: Create release
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -63,10 +63,10 @@ jobs:
           files: |
             dist/DNSCache_${{ github.ref_name }}.zip
             dist/dns_cache_tool.exe
-          draft: false
+          草案: false
           prerelease: false
-          name: DNSCache ${{ github.ref_name }}
-          body: |
+          名字: DNSCache ${{ github.ref_name }}
+          内容: |
             DNS缓存工具 ${{ github.ref_name }} 发布
             
             ## 下载
