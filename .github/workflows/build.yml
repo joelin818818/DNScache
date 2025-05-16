@@ -1,51 +1,51 @@
-名字: Build and Release DNSCache
+name: 构建和发布 DNSCache
 
 on:
   push:
-    标签:
-      - 'v*'  # 推送标签时触发，如v1.0.0
+    tags:
+      - 'v*'  # 推送标签时触发，如 v1.0.0
   workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - 名字: Checkout code
+      - name: 检出代码
         uses: actions/checkout@v3
 
-      - 名字: Set up Python
+      - name: 设置 Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - 名字: Install dependencies
+      - name: 安装依赖
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install nuitka ordered-set zstandard
 
-      - 名字: Install MinGW (needed for Nuitka)
+      - name: 安装 MinGW（Nuitka 所需）
         run: |
           choco install mingw -y
 
-      - 名字: Build with Nuitka
+      - name: 使用 Nuitka 构建
         run: |
           python -m nuitka --standalone --onefile --follow-imports --plugin-enable=numpy --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ github.ref_name }}" --windows-product-version="${{ github.ref_name }}" --output-dir=dist dns_cache_tool.py
 
-      - 名字: Create version info
+      - name: 创建版本信息
         run: |
           echo "版本: ${{ github.ref_name }}" > dist/version.txt
           echo "构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> dist/version.txt
           echo "提交: ${{ github.sha }}" >> dist/version.txt
 
-      - 名字: Create zip archive
+      - name: 创建压缩包
         run: |
           cd dist
           Compress-Archive -Path dns_cache_tool.exe, version.txt -DestinationPath DNSCache_${{ github.ref_name }}.zip
           cd ..
 
-      - 名字: Create Release
+      - name: 创建发布
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -53,10 +53,10 @@ jobs:
           files: |
             dist/DNSCache_${{ github.ref_name }}.zip
             dist/dns_cache_tool.exe
-          草案: false
+          draft: false
           prerelease: false
-          名字: DNSCache ${{ github.ref_name }}
-          内容: |
+          name: DNSCache ${{ github.ref_name }}
+          body: |
             DNS缓存工具 ${{ github.ref_name }} 发布
             
             ## 下载
