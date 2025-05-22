@@ -40,7 +40,7 @@ jobs:
 
       - name: Build with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --follow-imports --enable-plugin=tk-inter --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ env.DATE_VERSION }}" --windows-product-version="${{ env.DATE_VERSION }}" --assume-yes-for-downloads --show-progress --show-scons --show-memory --verbose --output-dir=dist --output-filename=DNSCacheGUI gui.py
+          python -m nuitka --standalone --onefile --follow-imports --enable-plugin=tk-inter,anti-bloat --lto=yes --windows-icon-from-ico=favicon.ico --windows-company-name="DNS Cache" --windows-product-name="DNS Cache Tool" --windows-file-version="${{ env.DATE_VERSION }}" --windows-product-version="${{ env.DATE_VERSION }}" --assume-yes-for-downloads --show-progress --output-dir=dist --output-filename=DNSCacheGUI gui.py
 
       - name: Create version info
         run: |
