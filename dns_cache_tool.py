@@ -116,11 +116,11 @@ class Config:
             'IncludeDNSInfo': '保存域名文件时是否包含DNS查询结果（true/false）'
         }
         
-        self.load_config() # In __init__, we don't typically return status to the direct caller of Config().
-                           # The caller can call load_config() again if they need the status and message.
+        self.load_config() # 在__init__中，我们通常不直接向Config()的调用者返回状态。
+                           # 如果调用者需要状态和消息，可以再次调用load_config()。
     
     def load_config(self) -> tuple[bool, str]:
-        """加载配置文件. Returns (success_status, message)."""
+        """加载配置文件。返回 (success_status, message)。"""
         # 先设置默认配置
         for section, options in self.default_config.items():
             if not self.config.has_section(section):
@@ -132,25 +132,25 @@ class Config:
         if os.path.exists(self.config_file):
             try:
                 self.config.read(self.config_file, encoding='utf-8')
-                return True, f"已加载配置文件: {self.config_file}" # MOD: Return status and message
+                return True, f"已加载配置文件: {self.config_file}" 
             except Exception as e:
-                return False, f"加载配置文件出错: {e}" # MOD: Return status and message
+                return False, f"加载配置文件出错: {e}" 
         else:
             # 保存默认配置
-            created, message = self.save_config() # MOD: Capture status and message from save_config
+            created, message = self.save_config() 
             if created:
-                return True, f"已创建默认配置文件: {self.config_file}" # MOD: Return status and message
+                return True, f"已创建默认配置文件: {self.config_file}" 
             else:
-                return False, f"创建默认配置文件失败: {message}" # MOD: Propagate error message
+                return False, f"创建默认配置文件失败: {message}" 
     
     def save_config(self) -> tuple[bool, str]:
-        """保存配置到文件. Returns (success_status, message)."""
+        """保存配置到文件。返回 (success_status, message)。"""
         try:
             with open(self.config_file, 'w', encoding='utf-8') as f:
                 self.config.write(f)
-            return True, f"配置已保存到: {self.config_file}" # MOD: Return status and message
+            return True, f"配置已保存到: {self.config_file}" 
         except Exception as e:
-            return False, f"保存配置文件时出错: {e}" # MOD: Return status and message
+            return False, f"保存配置文件时出错: {e}" 
     
     def get(self, section, option, fallback=None):
         """获取配置值"""
@@ -185,11 +185,11 @@ class Config:
 class DNSPerformanceTester:
     """DNS性能测试工具，用于测试不同参数下的性能表现"""
     
-    def __init__(self, test_domains_file=None, output_dir="test_results", config=None, output_callback=None): # MOD: Added output_callback
+    def __init__(self, test_domains_file=None, output_dir="test_results", config=None, output_callback=None): # 添加了 output_callback
         self.output_callback = output_callback
         # 固定测试数据
         self.test_domains = []
-        self.load_test_domains(test_domains_file) # MOD: load_test_domains will use output_callback
+        self.load_test_domains(test_domains_file) # load_test_domains 将使用 output_callback
         
         # 确保结果目录存在
         self.output_dir = output_dir
@@ -256,7 +256,7 @@ class DNSPerformanceTester:
                     if self.output_callback: self.output_callback(f"从文件加载了 {len(self.test_domains)} 个测试域名: {file_path}")
             except Exception as e:
                 if self.output_callback: self.output_callback(f"加载测试域名文件 {file_path} 出错: {e}", is_error=True)
-                pass # Allow to proceed with default domains if file loading fails
+                pass # 如果文件加载失败，允许继续使用默认域名
         
         # 如果没有加载到域名或没提供文件，使用默认域名
         if not self.test_domains:
@@ -386,12 +386,12 @@ class DNSPerformanceTester:
         success_rate = successful_queries / len(test_sample) if test_sample else 0
         
         # 计算查询时间统计数据
-        query_times = [r['query_time'] for r in results if r['success']] # MOD: Only consider successful queries
+        query_times = [r['query_time'] for r in results if r['success']] # 仅考虑成功查询的时间统计
         avg_query_time = statistics.mean(query_times) if query_times else 0
         
         try:
             median_query_time = statistics.median(query_times) if query_times else 0
-        except statistics.StatisticsError: # MOD: Handle error for small sample
+        except statistics.StatisticsError: # 处理样本量过小无法计算中位数的情况
             median_query_time = avg_query_time if query_times else 0
         
         # 每秒查询数
@@ -415,7 +415,7 @@ class DNSPerformanceTester:
         return test_result
     
     def run_tests(self) -> tuple[dict, str, str] | None: 
-        """运行所有参数测试. Returns (best_params, readable_results_path, optimal_config_path) or None."""
+        """运行所有参数测试。返回 (最佳参数, 可读结果文件路径, 优化配置路径) 或 None。"""
         if self.output_callback: self.output_callback("开始DNS缓存工具参数性能测试...\n")
         
         # 为每个参数测试不同的值
@@ -446,7 +446,7 @@ class DNSPerformanceTester:
         return None
 
     def save_param_results(self, param_name, results) -> str: 
-        """保存单个参数的测试结果. Returns file_path."""
+        """保存单个参数的测试结果。返回文件路径。"""
         file_path = os.path.join(self.output_dir, f"param_test_{param_name}.json")
         try:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -459,7 +459,7 @@ class DNSPerformanceTester:
         return file_path
     
     def save_readable_results(self) -> str: 
-        """将JSON测试结果转换为易读的TXT格式. Returns file_path."""
+        """将JSON测试结果转换为易读的TXT格式。返回文件路径。"""
         output_file = os.path.join(self.output_dir, "dns_performance_test_results.txt")
         
         with open(output_file, "w", encoding="utf-8") as out_file:
@@ -505,7 +505,7 @@ class DNSPerformanceTester:
         return output_file
     
     def save_best_params(self) -> tuple[dict, str, str]:
-        """保存最佳参数组合. Returns (best_params_dict, readable_results_path, optimal_config_path)."""
+        """保存最佳参数组合。返回 (最佳参数字典, 可读结果文件路径, 优化配置路径)。"""
         best_params_file_path = os.path.join(self.output_dir, "best_params.json")
         try:
             with open(best_params_file_path, 'w', encoding='utf-8') as f:
@@ -540,7 +540,7 @@ IncludeDNSInfo = true
 """.format(**self.default_params)
         
         config_path = os.path.join(self.output_dir, "optimal_config.ini")
-        with open(config_path, 'w', encoding='utf-8') as f:
+        with open(config_path, 'w', encoding='utf-8') as f: # 这个 with 语句没有 try-except 包裹
             f.write(config_content)
         
         
@@ -558,7 +558,7 @@ IncludeDNSInfo = true
         return self.default_params, readable_result_file_path, config_path
 
     def get_recommendations_text(self) -> tuple[str, str]: 
-        """获取推荐参数的文本描述和优化配置文件的路径."""
+        """获取推荐参数的文本描述和优化配置文件的路径。"""
         recommendations_text = "DNS缓存工具性能测试完成，推荐参数设置:\n"
         recommendations_text += "="*60 + "\n"
         recommendations_text += f"每秒查询次数 (QueriesPerSecond): {self.default_params['QueriesPerSecond']}\n"
@@ -572,14 +572,14 @@ IncludeDNSInfo = true
         return recommendations_text, optimal_config_path
 
 class DNSCacheTool:
-    def __init__(self, progress_callback=None, message_callback=None): # MOD: Added callbacks
+    def __init__(self, progress_callback=None, message_callback=None): # 添加了回调
         self.progress_callback = progress_callback
         self.message_callback = message_callback
 
         # 加载配置
-        self.config = Config() # Config class is already refactored
-        success, msg = self.config.load_config() # load_config is refactored
-        if self.message_callback: # MOD: Use callback for initial config load message
+        self.config = Config() # Config 类已被重构
+        success, msg = self.config.load_config() # load_config 已被重构
+        if self.message_callback: # 使用回调进行初始配置加载消息
             self.message_callback(msg)
         
         self.visited_domains = set()
@@ -614,8 +614,7 @@ class DNSCacheTool:
                 domain = domain.split(':')[0]
             return domain.lower() if domain else None
         except Exception as e:
-            # print(f"解析URL时出错: {url}, 错误: {e}") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback(f"解析URL时出错: {url}, 错误: {e}")
             return None
     
@@ -728,8 +727,7 @@ class DNSCacheTool:
                                     links.add(pattern)
             
         except Exception as e:
-            # print(f"获取域名 {domain} 链接时出错: {e}") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback(f"获取域名 {domain} 链接时出错: {e}")
             # 记录失败的DNS解析
             result = {
@@ -761,8 +759,8 @@ class DNSCacheTool:
             result['success'] = True
             result['ip_addresses'].append(ip)
         except Exception as socket_error:
-            # MOD: Report socket_error via callback
-            result['error'] = str(socket_error) # Store first error
+            # 通过回调报告 socket_error
+            result['error'] = str(socket_error) # 存储第一个错误
             if self.message_callback:
                 self.message_callback(f"查询DNS时出错 (socket): {domain}, 错误: {socket_error}", is_error=True)
             try:
@@ -771,15 +769,16 @@ class DNSCacheTool:
                 resolver.lifetime = self.config.getfloat('DNS', 'Timeout')
                 answers = resolver.resolve(domain, 'A')
                 
-                result['success'] = True
-                for rdata in answers:
-                    result['ip_addresses'].append(str(rdata))
+                result['success'] = True # 如果dns.resolver成功，则标记为成功
+                result['ip_addresses'] = [str(rdata) for rdata in answers] # 覆盖之前的空列表
+                result['error'] = None # 清除之前的socket错误，因为dns.resolver成功了
             except Exception as dns_error:
-                result['success'] = False
-                result['error'] = str(dns_error)
-                # print(f"查询DNS时出错: {domain}, 错误: {dns_error}") # MOD: Removed print
-                if self.message_callback: # MOD: Use callback
-                    self.message_callback(f"查询DNS时出错: {domain}, 错误: {dns_error}")
+                result['success'] = False # 确保如果dns_error发生，success为False
+                # 如果socket_error已记录，则保留它；否则记录dns_error
+                if not result['error']: # 只有当socket_error没有发生时，才记录dns_error
+                    result['error'] = str(dns_error)
+                if self.message_callback: # 使用回调
+                    self.message_callback(f"查询DNS时出错 (dns.resolver): {domain}, 错误: {dns_error}")
         
         # 存储结果
         self.dns_results[domain] = result
@@ -791,8 +790,7 @@ class DNSCacheTool:
             return
             
         self.visited_domains.add(domain)
-        # print(f"正在处理域名: {domain} [已收集: {len(self.collected_domains)}/{self.target_count}]") # MOD: Removed print
-        if self.progress_callback: # MOD: Use progress_callback
+        if self.progress_callback: # 使用 progress_callback
             self.progress_callback(f"正在处理域名: {domain}", len(self.collected_domains), self.target_count)
         
         try:
@@ -809,26 +807,22 @@ class DNSCacheTool:
                 
                 # 每收集100个域名保存一次（使用临时保存，不更新文件名中的计数）
                 if len(self.collected_domains) % 100 == 0:
-                    # print(f"已收集 {len(self.collected_domains)} 个域名") # MOD: Removed print
-                    if self.message_callback: # MOD: Use message_callback
+                    if self.message_callback: # 使用 message_callback
                         self.message_callback(f"已收集 {len(self.collected_domains)} 个域名")
-                    self.save_domains_to_file(final_save=False) # save_domains_to_file will be refactored
+                    self.save_domains_to_file(final_save=False) # save_domains_to_file 将被重构
         except Exception as e:
-            # print(f"处理域名 {domain} 时出错: {e}") # MOD: Removed print
-            if self.message_callback: # MOD: Use message_callback
+            if self.message_callback: # 使用 message_callback
                 self.message_callback(f"处理域名 {domain} 时出错: {e}")
 
-    def collect_domains(self, start_domain, only_subdomains=False) -> tuple[int, str | None]: # MOD: Added return type
-        """从起始域名开始收集域名. Returns (collected_domain_count, final_save_file_path)."""
+    def collect_domains(self, start_domain, only_subdomains=False) -> tuple[int, str | None]: # 添加了返回类型
+        """从起始域名开始收集域名。返回 (收集到的域名数量, 最终保存文件路径)。"""
         self.only_subdomains = only_subdomains
         self.base_domain = start_domain
-        # print(f"开始从 {start_domain} 收集域名...") # MOD: Removed print
-        if self.message_callback: # MOD: Use message_callback
+        if self.message_callback: # 使用 message_callback
             self.message_callback(f"开始从 {start_domain} 收集域名...")
         
         if only_subdomains:
-            # print(f"🔒 仅收集 {start_domain} 的子域名") # MOD: Removed print
-            if self.message_callback: # MOD: Use message_callback
+            if self.message_callback: # 使用 message_callback
                 self.message_callback(f"🔒 仅收集 {start_domain} 的子域名")
         
         self.visited_domains = set()
@@ -842,8 +836,7 @@ class DNSCacheTool:
         
         # 创建线程池
         collect_threads = self.config.getint('Crawler', 'CollectThreads')
-        # print(f"🧵 使用 {collect_threads} 个线程进行域名收集") # MOD: Removed print
-        if self.message_callback: # MOD: Use message_callback
+        if self.message_callback: # 使用 message_callback
             self.message_callback(f"🧵 使用 {collect_threads} 个线程进行域名收集")
         
         with ThreadPoolExecutor(max_workers=collect_threads) as executor:
@@ -865,22 +858,20 @@ class DNSCacheTool:
                     future.result()
         
         # 最终保存，更新域名数量
-        final_file_path = self.save_domains_to_file(final_save=True) # save_domains_to_file will be refactored to return path
-        # print(f"域名收集完成! 共收集了 {len(self.collected_domains)} 个域名") # MOD: Removed print
-        if self.message_callback: # MOD: Use message_callback
+        final_file_path = self.save_domains_to_file(final_save=True) # save_domains_to_file 将被重构以返回路径
+        if self.message_callback: # 使用 message_callback
             self.message_callback(f"域名收集完成! 共收集了 {len(self.collected_domains)} 个域名")
         return len(self.collected_domains), final_file_path
 
-    def batch_query_dns(self, file_path=None) -> tuple[int, int, dict | None]: # MOD: Added return type
-        """批量查询DNS以加快缓存. Returns (success_count, total_count, dns_results_dict)."""
-        # load_domains_from_file will be refactored later
+    def batch_query_dns(self, file_path=None) -> tuple[int, int, dict | None]: # 添加了返回类型
+        """批量查询DNS以加快缓存。返回 (成功计数, 总计数, DNS结果字典)。"""
+        # load_domains_from_file 稍后将被重构
         domains_to_query = self.load_domains_from_file(file_path) if file_path else self.collected_domains
         
         if not domains_to_query:
-            # print("没有域名可供查询!") # MOD: Removed print
-            if self.message_callback: # MOD: Use message_callback
+            if self.message_callback: # 使用 message_callback
                 self.message_callback("没有域名可供查询!")
-            return 0, 0, None # MOD: Return failure indication
+            return 0, 0, None # 返回失败指示
         
         # 记录来源文件，用于生成更有描述性的导出文件名
         if file_path:
@@ -891,9 +882,7 @@ class DNSCacheTool:
         # 清空之前的DNS结果
         self.dns_results = {}
         
-        # print(f"开始查询 {len(domains_to_query)} 个域名的DNS...") # MOD: Removed print
-        # print(f"注意: 查询速率限制为每秒最多{self.config.getint('DNS', 'QueriesPerSecond')}次查询") # MOD: Removed print
-        if self.message_callback: # MOD: Use message_callback
+        if self.message_callback: # 使用 message_callback
             self.message_callback(f"开始查询 {len(domains_to_query)} 个域名的DNS...")
             self.message_callback(f"注意: 查询速率限制为每秒最多{self.config.getint('DNS', 'QueriesPerSecond')}次查询")
 
@@ -901,7 +890,7 @@ class DNSCacheTool:
         total_count = len(domains_to_query)
         
         # 使用限制线程数的线程池来控制并发查询
-        # Ensure max_workers is at least 1, even if total_count is 0 (though unlikely if domains_to_query is not empty)
+        # 确保 max_workers 至少为1，即使 total_count 为0（虽然在 domains_to_query 非空时不太可能）
         max_workers = min(self.config.getint('DNS', 'MaxWorkers'), total_count if total_count > 0 else 1)
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             domains_list = list(domains_to_query)
@@ -909,8 +898,8 @@ class DNSCacheTool:
             
             for i in range(0, len(domains_list), batch_size):
                 batch = domains_list[i:i+batch_size]
-                # query_dns is already refactored to store its own results in self.dns_results
-                # and return a boolean for success.
+                # query_dns 已被重构，将其结果存储在 self.dns_results 中
+                # 并返回一个布尔值表示成功。
                 future_results = [executor.submit(self.query_dns, domain) for domain in batch]
                 
                 batch_success_flags = [future.result() for future in future_results]
@@ -918,29 +907,25 @@ class DNSCacheTool:
                 success_count += batch_success_count
                 
                 processed_count = i + len(batch)
-                # print(f"进度: {progress}%, 成功: {success_count}/{i+len(batch)}") # MOD: Removed print
-                if self.progress_callback: # MOD: Use progress_callback
+                if self.progress_callback: # 使用 progress_callback
                     progress_percentage = min(100, int(processed_count / total_count * 100)) if total_count > 0 else 0
                     self.progress_callback(f"DNS查询进度: {progress_percentage}%", success_count, processed_count, total_count)
         
-        # print(f"DNS查询完成! 成功查询了 {success_count}/{total_count} 个域名") # MOD: Removed print
-        if self.message_callback: # MOD: Use message_callback
+        if self.message_callback: # 使用 message_callback
             self.message_callback(f"DNS查询完成! 成功查询了 {success_count}/{total_count} 个域名")
         
-        # self.ask_export_results() # MOD: Removed CLI interaction, caller will handle this
-        return success_count, total_count, self.dns_results # MOD: Return results
+        return success_count, total_count, self.dns_results # 返回结果
 
-    # def ask_export_results(self): # MOD: This method is removed, CLI will handle this logic.
+    # def ask_export_results(self): # 此方法已移除，CLI将处理此逻辑。
     #     """询问用户是否导出结果"""
-    #     # ... (Original code with print and input was here) ...
+    #     # ... (原始代码包含print和input) ...
 
-    def export_results(self, format_type: str) -> str | None: # MOD: Added return type
-        """导出DNS查询结果. Returns exported file_path or None."""
+    def export_results(self, format_type: str) -> str | None: # 添加了返回类型
+        """导出DNS查询结果。返回导出的文件路径或None。"""
         if not self.dns_results:
-            # print("没有结果可导出!") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback("没有结果可导出!")
-            return None # MOD: Return None
+            return None # 返回None
         
         timestamp = time.strftime("%Y%m%d%H%M")
         
@@ -949,20 +934,20 @@ class DNSCacheTool:
         successful_domains = [domain for domain, result in self.dns_results.items() if result['success']]
         
         # 添加源文件或域名信息
-        # MOD: Use direct attribute access and ensure attributes exist or provide defaults
+        # 直接访问属性，并确保属性存在或提供默认值
         base_name_part = None
-        if hasattr(self, 'base_domain') and self.base_domain: # Check if base_domain was set
+        if hasattr(self, 'base_domain') and self.base_domain: # 检查是否已设置 base_domain
             base_name_part = self.base_domain.replace('.', '_')
             filename_parts.append(base_name_part)
-            if hasattr(self, 'only_subdomains') and self.only_subdomains: # Check if only_subdomains was set
+            if hasattr(self, 'only_subdomains') and self.only_subdomains: # 检查是否已设置 only_subdomains
                 filename_parts.append("仅子域名")
-        elif hasattr(self, 'current_source_file') and self.current_source_file: # Check if a source file was used
+        elif hasattr(self, 'current_source_file') and self.current_source_file: # 检查是否使用了源文件
             source_filename = os.path.basename(self.current_source_file)
             source_name = os.path.splitext(source_filename)[0]
             filename_parts.append(f"来源_{source_name}")
         
         # 添加成功查询数量信息
-        if successful_domains: # MOD: Only add if there are successful domains
+        if successful_domains: # 仅当有成功域名时添加
             filename_parts.append(f"{len(successful_domains)}个成功DNS结果")
         
         # 合并所有部分
@@ -991,36 +976,33 @@ class DNSCacheTool:
                         ip_addresses
                     ])
         else:
-            # print(f"不支持的导出格式: {format_type}") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback(f"不支持的导出格式: {format_type}")
-            return None # MOD: Return None
+            return None # 返回None
         
-        # print(f"结果已导出到: {export_file}") # MOD: Removed print
-        if self.message_callback: # MOD: Use callback
+        if self.message_callback: # 使用回调
             self.message_callback(f"结果已导出到: {export_file}")
         return export_file
 
-    def save_domains_to_file(self, final_save=False) -> str | None: # MOD: Added return type
-        """保存域名列表到文件. Returns file_path or None.
+    def save_domains_to_file(self, final_save=False) -> str | None: # 添加了返回类型
+        """保存域名列表到文件。返回文件路径或None。
         
         参数:
             final_save (bool): 是否是最终保存，为True时会更新文件名中的域名数量
         """
         if not self.collected_domains:
-            # print("没有域名可保存!") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback("没有域名可保存!")
-            return None # MOD: Return None
+            return None # 返回None
         
         # 如果是最终保存或者当前文件未创建，则创建/更新文件名
         if final_save or not self.current_file:
             timestamp = time.strftime("%Y%m%d%H%M")
             
-            filename_parts_save = [] # MOD: Renamed to avoid conflict with outer scope if any
+            filename_parts_save = [] # 重命名以避免与外部作用域冲突（如果有）
             
             # 添加起始域名信息
-            # MOD: Use direct attribute access and check existence
+            # 直接访问属性并检查其存在性
             if hasattr(self, 'base_domain') and self.base_domain:
                 base_name = self.base_domain.replace('.', '_')
                 filename_parts_save.append(base_name)
@@ -1030,11 +1012,11 @@ class DNSCacheTool:
                 filename_parts_save.append("仅子域名")
             
             # 添加域名数量
-            if self.collected_domains: # MOD: Ensure domains exist before getting len
+            if self.collected_domains: # 仅当存在域名时添加长度
                 filename_parts_save.append(f"{len(self.collected_domains)}个域名")
             
             # 合并所有部分
-            descriptive_name = "-".join(filename_parts_save) if filename_parts_save else "collected_domains" # MOD: Default name
+            descriptive_name = "-".join(filename_parts_save) if filename_parts_save else "collected_domains" # 默认名称
             
             # 完整文件名
             new_file = os.path.join(self.data_dir, f"{descriptive_name}_{timestamp}.json")
@@ -1043,23 +1025,20 @@ class DNSCacheTool:
                 if final_save:
                     try:
                         os.remove(self.current_file)
-                        # print(f"已删除旧文件: {self.current_file}") # MOD: Removed print
-                        if self.message_callback: # MOD: Use callback
+                        if self.message_callback: # 使用回调
                             self.message_callback(f"已删除旧文件: {self.current_file}")
                     except Exception as e:
-                        # print(f"删除旧文件时出错: {e}") # MOD: Removed print
-                        if self.message_callback: # MOD: Use callback
+                        if self.message_callback: # 使用回调
                             self.message_callback(f"删除旧文件时出错: {e}")
             
             self.current_file = new_file
         
         domains_data = list(self.collected_domains)
         
-        try: # MOD: Added try-except for file operation
+        try: # 为文件操作添加try-except
             with open(self.current_file, 'w', encoding='utf-8') as f:
                 json.dump(domains_data, f, ensure_ascii=False, indent=2)
-            # print(f"域名已保存到文件: {self.current_file}") # MOD: Removed print
-            if self.message_callback: # MOD: Use callback
+            if self.message_callback: # 使用回调
                 self.message_callback(f"域名已保存到文件: {self.current_file}")
             return self.current_file
         except Exception as e:
@@ -1067,8 +1046,8 @@ class DNSCacheTool:
                 self.message_callback(f"保存域名文件时出错: {e}")
             return None
 
-    def load_domains_from_file(self, file_path: str) -> set[str]: # MOD: Added type hint
-        """从文件加载域名列表. Returns a set of domains."""
+    def load_domains_from_file(self, file_path: str) -> set[str]: # 添加了类型提示
+        """从文件加载域名列表。返回一个域名集合。"""
         try:
             # 记录来源文件
             self.current_source_file = file_path
@@ -1077,7 +1056,7 @@ class DNSCacheTool:
                 try:
                     # 加载JSON格式
                     data = json.load(f)
-                    loaded_domains_count = 0 # MOD: For unified message
+                    loaded_domains_count = 0 # 用于统一消息
                     
                     # 检查是否是直接的域名列表（新格式）
                     if isinstance(data, list):
@@ -1098,23 +1077,23 @@ class DNSCacheTool:
                             self.dns_results = data['dns_results']
                             if self.message_callback:
                                 self.message_callback(f"同时加载了 {len(self.dns_results)} 条旧DNS查询结果")
-                    # 其他格式 (Try to interpret as a list if no known structure matches)
+                    # 其他格式 (如果无法识别结构，则尝试解释为列表)
                     else:
                         if isinstance(data, list):
                             domains = data
                             loaded_domains_count = len(domains)
-                        else: # Fallback if it's not a list or recognized dict
+                        else: # 如果不是列表或无法识别的字典，则回退
                              domains = [] 
                              if self.message_callback:
                                 self.message_callback(f"警告: 文件 {file_path} 不是预期的JSON列表或字典格式。")
                         
-                except json.JSONDecodeError: # MOD: Specific error for JSON
+                except json.JSONDecodeError: # JSON特定错误
                     f.seek(0)  # 重置文件指针
                     if file_path.endswith('.csv'):
                         csv_reader = csv.reader(f)
                         try: 
                             next(csv_reader)  # 跳过表头
-                        except StopIteration: # Empty CSV
+                        except StopIteration: # 空CSV
                              domains = []
                         else:
                             domains = []
@@ -1130,7 +1109,7 @@ class DNSCacheTool:
                 if self.message_callback:
                     self.message_callback(f"从文件 {file_path} 加载了 {loaded_domains_count} 个域名")
 
-                self.collected_domains.update(set(domains)) # MOD: Update collected_domains, not replace
+                self.collected_domains.update(set(domains)) # 更新收集到的域名，而不是替换
                 return set(domains)
         except FileNotFoundError:
             if self.message_callback:
@@ -1141,26 +1120,26 @@ class DNSCacheTool:
                 self.message_callback(f"加载域名文件时出错: {e}")
             return set()
 
-    # def import_domains(self): # MOD: This method is removed, its logic will be in a CLI-specific function
+    # def import_domains(self): # 此方法已移除，其逻辑将移至CLI特定函数
     #     """导入域名列表"""
-    #     # ... (Original CLI-heavy code was here) ...
+    #     # ... (原始的CLI密集型代码在此) ...
 
-    def get_available_files(self) -> list[str]: # MOD: Added return type
-        """获取可用的域名文件列表. Returns a list of file paths."""
-        if not os.path.exists(self.data_dir): # MOD: Handle non-existent data_dir
+    def get_available_files(self) -> list[str]: # 添加了返回类型
+        """获取可用的域名文件列表。返回文件路径列表。"""
+        if not os.path.exists(self.data_dir): # 处理不存在的data_dir
             try:
                 os.makedirs(self.data_dir)
                 if self.message_callback:
                     self.message_callback(f"数据目录 {self.data_dir} 不存在，已创建。")
-                return [] # Return empty list as it was just created
+                return [] # 返回空列表，因为目录刚创建
             except Exception as e:
                 if self.message_callback:
                     self.message_callback(f"创建数据目录 {self.data_dir} 失败: {e}")
-                return [] # Return empty list on error
+                return [] # 出错时返回空列表
 
         files = []
         try:
-            for file_name in os.listdir(self.data_dir): # MOD: Renamed 'file' to 'file_name'
+            for file_name in os.listdir(self.data_dir): # 将 'file' 重命名为 'file_name'
                 if (file_name.startswith("domains_") and file_name.endswith(".json")) or \
                    (file_name.startswith("dns_results_") and (file_name.endswith(".json") or file_name.endswith(".csv"))):
                     files.append(os.path.join(self.data_dir, file_name))
@@ -1169,30 +1148,30 @@ class DNSCacheTool:
                 self.message_callback(f"列出数据目录 {self.data_dir} 中的文件时出错: {e}")
         return files
 
-    # def edit_config(self): # MOD: Removed, CLI logic will be in cli_edit_config
+    # def edit_config(self): # 已移除，CLI逻辑将在cli_edit_config中
     #     """编辑配置"""
-    #     # ... (Original code was here) ...
+    #     # ... (原始代码在此) ...
 
-    # def edit_section(self, section): # MOD: Removed, CLI logic will be in cli_edit_section
+    # def edit_section(self, section): # 已移除，CLI逻辑将在cli_edit_section中
     #     """编辑特定配置部分"""
-    #     # ... (Original code was here) ...
+    #     # ... (原始代码在此) ...
 
-    # def run_performance_test(self): # MOD: Removed, CLI logic will be in cli_run_performance_test
+    # def run_performance_test(self): # 已移除，CLI逻辑将在cli_run_performance_test中
     #     """运行性能测试，找出最佳参数配置"""
-    #     # ... (Original code was here) ...
+    #     # ... (原始代码在此) ...
 
-# --- CLI specific functions --- # MOD: New section for CLI interactions
+# --- CLI特定函数 --- # 用于CLI交互的新区域
 
-def cli_edit_config(tool: DNSCacheTool): # MOD: New function, adapted from DNSCacheTool.edit_config
+def cli_edit_config(tool: DNSCacheTool): # 从DNSCacheTool.edit_config改编的新函数
     """CLI: 编辑配置"""
     while True:
         print("\n" + "="*50)
             print("⚙️ 配置设置")
             print("="*50)
             
-            sections = tool.config.config.sections() # MOD: Use tool.config
-            for i, section_key in enumerate(sections, 1): # MOD: Iterate over keys
-                section_name = tool.config.get_name(section_key) # Get translated name
+            sections = tool.config.config.sections() # 使用tool.config
+            for i, section_key in enumerate(sections, 1): # 遍历键
+                section_name = tool.config.get_name(section_key) # 获取翻译后的名称
                 icon = ""
                 if section_key == 'General': icon = "🔧"
                 elif section_key == 'DNS': icon = "🌐"
@@ -1206,10 +1185,10 @@ def cli_edit_config(tool: DNSCacheTool): # MOD: New function, adapted from DNSCa
                 choice = int(input("\n请选择要编辑的部分: "))
                 
                 if 1 <= choice <= len(sections):
-                    section_key_selected = sections[choice-1] # MOD: Get selected key
-                    cli_edit_section(tool, section_key_selected) # MOD: Call new CLI specific function
+                    section_key_selected = sections[choice-1] # 获取选定的键
+                    cli_edit_section(tool, section_key_selected) # 调用新的CLI特定函数
                 elif choice == len(sections)+1:
-                    success, msg = tool.config.save_config() # MOD: Use Config class method
+                    success, msg = tool.config.save_config() # 使用Config类的方法
                     if tool.message_callback: tool.message_callback(msg)
                     else: print(msg)
                     break
@@ -1218,7 +1197,7 @@ def cli_edit_config(tool: DNSCacheTool): # MOD: New function, adapted from DNSCa
             except ValueError:
                 print("❌ 请输入有效的数字!")
 
-def cli_edit_section(tool: DNSCacheTool, section_key: str): # MOD: New function, adapted from DNSCacheTool.edit_section
+def cli_edit_section(tool: DNSCacheTool, section_key: str): # 从DNSCacheTool.edit_section改编的新函数
     """CLI: 编辑特定配置部分"""
     while True:
         section_name = tool.config.get_name(section_key)
@@ -1226,7 +1205,7 @@ def cli_edit_section(tool: DNSCacheTool, section_key: str): # MOD: New function,
         print("="*50)
         
         options = tool.config.config.options(section_key)
-        for i, option_key in enumerate(options, 1): # MOD: Iterate over keys
+        for i, option_key in enumerate(options, 1): # 遍历键
             value = tool.config.get(section_key, option_key)
             option_chinese_name = tool.config.get_name(option_key)
             option_desc = tool.config.get_description(option_key)
@@ -1239,7 +1218,7 @@ def cli_edit_section(tool: DNSCacheTool, section_key: str): # MOD: New function,
             choice = int(input("\n请选择要编辑的选项: "))
             
             if 1 <= choice <= len(options):
-                option_key_selected = options[choice-1] # MOD: Get selected key
+                option_key_selected = options[choice-1] # 获取选定的键
                 option_chinese_name = tool.config.get_name(option_key_selected)
                 current_value = tool.config.get(section_key, option_key_selected)
                 option_desc = tool.config.get_description(option_key_selected)
@@ -1248,7 +1227,7 @@ def cli_edit_section(tool: DNSCacheTool, section_key: str): # MOD: New function,
                 
                 prompt_name = option_chinese_name if option_chinese_name != option_key_selected else option_key_selected
                 new_value = input(f"请输入新的 {prompt_name} 的值 (当前值: {current_value}): ")
-                tool.config.set(section_key, option_key_selected, new_value) # Use Config's method
+                tool.config.set(section_key, option_key_selected, new_value) # 使用Config的方法
                 msg = f"✅ 已更新 {prompt_name} = {new_value}"
                 if tool.message_callback: tool.message_callback(msg)
                 else: print(msg)
@@ -1259,7 +1238,7 @@ def cli_edit_section(tool: DNSCacheTool, section_key: str): # MOD: New function,
         except ValueError:
             print("❌ 请输入有效的数字!")
 
-def cli_run_performance_test(tool: DNSCacheTool): # MOD: New function, adapted from DNSCacheTool.run_performance_test
+def cli_run_performance_test(tool: DNSCacheTool): # 从DNSCacheTool.run_performance_test改编的新函数
     """CLI: 运行性能测试，找出最佳参数配置"""
     print("\n" + "="*50)
     print("🚀 DNS缓存工具参数性能测试")
@@ -1390,7 +1369,7 @@ def cli_run_performance_test(tool: DNSCacheTool): # MOD: New function, adapted f
     input("\n按Enter键返回主菜单...")
 
 
-def cli_ask_export_results(tool: DNSCacheTool): # MOD: New function, adapted from DNSCacheTool.ask_export_results
+def cli_ask_export_results(tool: DNSCacheTool): # 从DNSCacheTool.ask_export_results改编的新函数
     """CLI: 询问用户是否导出结果"""
     if not tool.dns_results:
         msg = "没有可导出的结果!"
@@ -1417,7 +1396,7 @@ def cli_ask_export_results(tool: DNSCacheTool): # MOD: New function, adapted fro
         else:
             print("无效的选择! 请重试。")
 
-def cli_import_domains(tool: DNSCacheTool): # MOD: New function, adapted from DNSCacheTool.import_domains
+def cli_import_domains(tool: DNSCacheTool): # 从DNSCacheTool.import_domains改编的新函数
     """CLI: 导入域名列表"""
     print("\n📥 导入域名列表")
     print("支持的格式: JSON文件或CSV文件（第一列为域名）")
@@ -1442,9 +1421,9 @@ def cli_import_domains(tool: DNSCacheTool): # MOD: New function, adapted from DN
                  cli_ask_export_results(tool)
 
 
-# --- Main CLI Loop ---
-def main_cli(): # MOD: Renamed main to main_cli
-    # Simple progress and message callbacks for CLI
+# --- 主CLI循环 ---
+def main_cli(): # 将main重命名为main_cli
+    # 用于CLI的简单进度和消息回调
     def cli_progress_handler(message, current, *args): 
         if not args:
              print(f"{message}: {current}")
@@ -1487,7 +1466,7 @@ def main_cli(): # MOD: Renamed main to main_cli
             
             tool.current_file = None 
             collected_count, final_file_path = tool.collect_domains(start_domain, only_subdomains)
-            # Messages about collection and saving are handled by callbacks
+            # 关于收集和保存的消息由回调处理
         
         elif cli_choice == '2':
             available_files = tool.get_available_files() 
@@ -1531,4 +1510,4 @@ def main_cli(): # MOD: Renamed main to main_cli
             print("❌ 无效的选择! 请重试。")
 
 if __name__ == "__main__":
-    main_cli() # MOD: Call the new CLI main function
+    main_cli() # 调用新的CLI主函数
