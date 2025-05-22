@@ -1,125 +1,162 @@
-# 🌐 DNS缓存工具 🚀
+# 🌐 DNS Cache Tool GUI 🚀
 
-这是一个用Python编写的DNS缓存工具，它能够从一个初始域名开始，递归地收集相关域名，并通过查询DNS来加快您的DNS服务器缓存。✨
+This is a Python-based DNS utility with a graphical user interface (GUI) built using Tkinter. It helps you discover domains, perform DNS queries, and test DNS performance to optimize your local DNS cache or analyze domain resolution. ✨
 
-## ✅ 功能
+[Screenshot of Main Window]
 
-- 🔍 从一个起始域名开始，递归收集多达2000个不同域名（可在配置中调整）
-- 💾 自动保存收集到的域名到JSON文件
-- 📂 支持使用已保存的域名文件进行DNS查询
-- ⚡ 支持多线程DNS查询以加快速度
-- 🛡️ DNS查询速率限制（每秒最多12次），避免触发DNS服务器限制
-- 📊 支持导出DNS查询结果为JSON或CSV格式
-- 📥 支持从外部文件导入域名列表
-- 🔎 增强的域名提取能力，支持从JavaScript、CSS等资源中提取域名
-- ⚙️ 可自定义配置文件，调整查询速率、线程数等参数
-- 🚀 内置性能测试工具，可帮助找出最佳参数设置
-- 📦 支持打包为独立可执行文件，可在无Python环境的系统上运行
+## ✅ Features
 
-## 📥 安装
+-   **Intuitive GUI:** Easy-to-use interface for all operations.
+-   **Domain Collection:**
+    -   Recursively collect domains starting from an initial domain.
+    -   Option to limit collection to subdomains only.
+    -   Real-time progress display.
+-   **DNS Querying:**
+    -   Load domains from a file (JSON, CSV, TXT) and perform batch DNS queries.
+    -   Import domain lists to add to your current collection and optionally query them.
+-   **Data Management:**
+    -   Save collected domains to JSON files.
+    *   Export DNS query results to JSON or CSV formats.
+-   **Advanced Parsing:** Extracts domains from HTML, and optionally from linked JavaScript, CSS, images, and meta tags.
+-   **Performance Optimization:**
+    -   Multi-threaded operations for domain collection and DNS querying.
+    -   Configurable DNS query rate limiting to avoid overloading servers.
+    -   Built-in Performance Tester to find optimal `QueriesPerSecond`, `MaxWorkers`, `Timeout`, and `BatchSize` settings for your environment.
+    -   Apply recommended settings with a click.
+-   **Configuration:**
+    *   Edit application settings (target domain count, query parameters, crawler options) through a dedicated GUI dialog.
+    *   Settings saved to `config.ini`.
+-   **Standalone Executable:** Can be packaged into a single executable file for use on systems without a Python environment.
 
-### 方法一：直接下载可执行文件
+## 📥 Installation
 
-1. 前往 [Releases](https://github.com/your-username/DNSCache/releases) 页面
-2. 下载最新版本的可执行文件（`.exe`）或完整程序包（`.zip`）
-3. 直接运行，无需安装Python环境
+### Method 1: Direct Download (Recommended for most users)
 
-### 方法二：源码安装
+1.  Go to the [Releases](https://github.com/your-username/DNSCache/releases) page (replace `your-username/DNSCache` with the actual repository path).
+2.  Download the latest version's executable (`.exe` for Windows) or the appropriate archive for your OS.
+3.  Run the executable directly. No Python installation is required.
 
-1. 确保您已安装Python 3.6或更高版本 🐍
-2. 克隆或下载此仓库 📦
-3. 安装依赖:
+### Method 2: From Source
+
+1.  **Prerequisites:**
+    *   Python 3.7 or higher (Tkinter is usually included).
+    *   Git (for cloning).
+2.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/DNSCache.git # Replace with actual repo path
+    cd DNSCache
+    ```
+3.  **Install dependencies:**
+    (This tool primarily uses standard Python libraries. External libraries are listed in `requirements.txt`.)
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *Note: `requirements.txt` includes `requests`, `beautifulsoup4`, and `dnspython`.*
+
+## 🎮 GUI Usage
+
+Run the application:
 
 ```bash
-pip install -r requirements.txt
+python gui.py
 ```
 
-## 🎮 使用方法
+The main window is divided into several sections:
 
-### 使用可执行文件
+[Screenshot of Main Window with sections highlighted if possible]
 
-直接双击运行下载的`.exe`文件即可。
+1.  **Domain Collection:**
+    *   **Start Domain:** Enter the initial domain (e.g., `example.com`).
+    *   **Only collect subdomains:** Check this if you only want subdomains of the Start Domain.
+    *   **Start Collection Button:** Begins the domain discovery process. Progress will be shown in the "Output & Logs" area and the status bar.
 
-### 使用源码
+2.  **Domain File Operations:**
+    *   **Load Domains & Start DNS Query Button:** Opens a file dialog to select a domain list file (JSON, CSV, TXT). After loading, it automatically starts batch DNS queries for the domains in that file.
+    *   **Import Domain List Button:** Opens a file dialog to select a domain list. These domains are added to the current internal collection. You'll be asked if you want to perform DNS queries on the *entire* updated collection.
 
-运行程序:
+3.  **Actions/Export:**
+    *   **Export DNS Query Results Button:** If DNS query results are available (e.g., after "Load Domains & Start DNS Query" or querying an imported list), this button allows you to save them. A file dialog will prompt for the save location and format (JSON or CSV).
+
+4.  **Settings & Performance:**
+    *   **Edit Configuration Button:** Opens a dialog to view and modify application settings (e.g., target domain count for collection, DNS query parameters, crawler options). Changes are saved to `config.ini` and applied to the current session.
+        [Screenshot of Configuration Dialog]
+    *   **Run Performance Test Button:** Opens a dialog to test DNS performance.
+        *   You can choose the domain source for the test: current collected domains, a specific file, or default test domains.
+        *   The test runs in the background, with live output in the dialog.
+        *   Once complete, it displays recommended settings and allows you to apply them to your `config.ini`.
+        [Screenshot of Performance Test Dialog]
+
+5.  **Output & Logs:**
+    *   This text area displays status messages, progress updates, error messages, and results from various operations.
+
+6.  **Status Bar:**
+    *   Shows brief messages about the current application status or ongoing operations.
+
+## ⚙️ Command-Line Interface (CLI)
+
+For advanced users or automation, a command-line interface is also available:
 
 ```bash
 python dns_cache_tool.py
 ```
 
-程序提供以下选项:
+This will present a menu-driven interface with similar functionalities to the GUI. The `dns_cache_tool.py` script shares the same backend logic and `config.ini` file as `gui.py`.
 
-1. **从新域名开始收集** 🔍: 输入一个起始域名，程序将从该域名开始，递归查找并访问相关域名（访问过程中系统会自动进行DNS解析）
-2. **使用已有域名文件查询DNS** 🔎: 选择之前保存的域名文件，对文件中的所有域名进行纯DNS查询（不访问网页内容）
-3. **导入域名列表** 📥: 从外部文件导入域名列表（支持JSON和CSV格式）
-4. **导出上次查询结果** 📤: 将上次查询的DNS结果导出为JSON或CSV格式
-5. **配置设置** ⚙️: 修改程序的配置设置
-6. **运行性能测试** 🚀: 测试不同参数组合的性能，找出最佳配置
-7. **退出** 👋: 退出程序
+## 🔧 Configuration File (`config.ini`)
 
-## 🔧 工作原理
+The application uses a `config.ini` file to store settings. You can edit this file directly (if the application is closed) or use the "Edit Configuration" dialog in the GUI. Key sections include:
 
-1. 🏁 程序从用户指定的初始域名开始
-2. 🌐 访问域名页面（此过程中系统自动进行DNS解析），并获取页面上的所有链接
-3. 🔗 从这些链接中提取新的域名，并添加到待访问队列
-4. 🔄 重复此过程，直到收集到设定数量的不同域名（默认2000个）或待访问队列为空
-5. 📝 收集到的域名将保存到JSON文件中
-6. 🚀 "使用已有域名文件查询DNS"功能可对已收集的域名进行纯DNS查询（不访问网页），加快DNS服务器缓存
+-   **General**: Target domain count for collection, data storage directory.
+-   **DNS**: DNS query parameters (queries per second, max workers, timeout, batch size).
+-   **Crawler**: Options for the web crawler (e.g., whether to parse JavaScript, CSS).
+-   **Export**: Default export settings.
 
-## 🛠️ 配置文件
+## 📦 Build Instructions
 
-程序使用`config.ini`文件存储配置，包括以下部分：
+The project can be packaged into a standalone executable using Nuitka.
 
-- **General**: 基本设置，如目标域名数量(默认2000)和数据目录
-- **DNS**: DNS查询相关配置，如每秒查询次数(默认12)、超时时间等
-- **Crawler**: 网页抓取相关配置，如是否提取JavaScript、CSS中的域名等
-- **Export**: 导出相关设置，如默认导出格式等
+### Using `build.py` Script
 
-您可以通过主菜单的"配置设置"选项来修改这些设置。
+A `build.py` script is provided to simplify the Nuitka build process. It targets `gui.py` as the main application entry point.
 
-## 📦 构建可执行文件
+1.  **Install Nuitka and its dependencies:**
+    ```bash
+    pip install nuitka ordered-set zstandard
+    ```
+    For Windows, you might also need a C++ compiler like MinGW (often distributed with MSYS2) or Visual Studio Build Tools. Nuitka will guide you if a compiler is missing.
 
-### 使用自动构建（GitHub Actions）
+2.  **Run the build script:**
+    ```bash
+    # Basic build (targets gui.py)
+    python build.py
 
-当推送带有版本标签（如`v1.0.0`）的提交时，GitHub Actions会自动构建可执行文件并发布到Releases页面。
+    # Specify version
+    python build.py --version 1.1.0
 
-### 手动构建
+    # Specify an icon (e.g., .ico for Windows, .icns for macOS)
+    python build.py --icon path/to/your/icon.ico 
+    # A default 'favicon.ico' is included and used if --icon is not specified.
 
-项目提供了一个构建脚本`build.py`，可以用于生成独立可执行文件：
+    # Create a one-directory bundle instead of a single file (useful for debugging)
+    python build.py --no-onefile 
+    ```
+    The script includes the `--enable-plugin=tk-inter` Nuitka option necessary for Tkinter applications.
 
-```bash
-# 基本构建
-python build.py
+### GitHub Actions
 
-# 指定版本号
-python build.py --version v1.0.0
+The repository includes a GitHub Actions workflow in `.github/workflows/build.yml` that automatically builds the application for Windows, Linux, and macOS when a new tag (e.g., `v1.1.0`) is pushed. The resulting executables/bundles are uploaded as release artifacts.
 
-# 指定图标文件
-python build.py --icon path/to/icon.ico
+## ⚠️ Important Notes
 
-# 输出为目录而非单文件
-python build.py --no-onefile
-```
+-   **Data Directory:** The application creates a `data` directory in its working path to store collected domain files, exported results, and performance test results.
+-   **Threading:** GUI operations that involve backend processing (like domain collection or batch DNS queries) are run in separate threads to keep the UI responsive.
+-   **Rate Limiting:** DNS query rate limiting is active by default to prevent issues with DNS servers.
 
-构建需要安装Nuitka和相关依赖：
+## 🙏 Acknowledgements
 
-```bash
-pip install nuitka ordered-set zstandard
-```
+-   Tkinter for the GUI framework.
+-   Nuitka for Python compilation.
 
-Windows用户还需安装MinGW。
+---
 
-## ⚠️ 注意事项
-
-- 📁 程序会创建一个名为`data`的目录来存储域名文件和导出的结果
-- 🧵 程序使用多线程进行域名收集和DNS查询，但限制并发度，以控制查询速率
-- ⏱️ 实现了DNS查询速率限制机制，避免触发DNS服务器的限制
-- 📊 批量DNS查询时，程序会显示进度百分比和成功率
-- 🔍 增强的域名提取功能可以从JavaScript文件、CSS文件、meta标签等多种来源提取域名
-- 💽 保存的域名文件可能包含DNS解析信息，便于后续分析
-- 🧪 性能测试功能可帮助找出适合您系统和网络环境的最佳参数设置
-
-## 🙏 感谢使用
-
-希望这个小工具能帮助你加速DNS解析体验！有任何问题或建议，欢迎反馈哦～ 😊 
+Hope this tool is helpful! Feedback and contributions are welcome. 😊
