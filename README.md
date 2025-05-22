@@ -113,38 +113,39 @@ The application uses a `config.ini` file to store settings. You can edit this fi
 
 ## 📦 Build Instructions
 
-The project can be packaged into a standalone executable using Nuitka.
+The project can be packaged into a standalone executable.
 
-### Using `build.py` Script
+### GitHub Actions (Automated Build)
 
-A `build.py` script is provided to simplify the Nuitka build process. It targets `gui.py` as the main application entry point.
+The repository includes a GitHub Actions workflow in `.github/workflows/build.yml`. This workflow automatically builds the application using **PyInstaller** for Windows when a new tag (e.g., `v1.1.0`) is pushed. The resulting executable and a zip bundle are uploaded as release artifacts.
 
-1.  **Install Nuitka and its dependencies:**
+### Manual Build (Local)
+
+You can also build the executable manually on your local machine using PyInstaller.
+
+1.  **Install Dependencies:**
+    Ensure you have Python installed and have installed the project's basic dependencies from `requirements.txt`:
     ```bash
-    pip install nuitka ordered-set zstandard
+    pip install -r requirements.txt
     ```
-    For Windows, you might also need a C++ compiler like MinGW (often distributed with MSYS2) or Visual Studio Build Tools. Nuitka will guide you if a compiler is missing.
 
-2.  **Run the build script:**
+2.  **Install PyInstaller:**
+    If you don't have PyInstaller installed, install it via pip:
     ```bash
-    # Basic build (targets gui.py)
-    python build.py
-
-    # Specify version
-    python build.py --version 1.1.0
-
-    # Specify an icon (e.g., .ico for Windows, .icns for macOS)
-    python build.py --icon path/to/your/icon.ico 
-    # A default 'favicon.ico' is included and used if --icon is not specified.
-
-    # Create a one-directory bundle instead of a single file (useful for debugging)
-    python build.py --no-onefile 
+    pip install pyinstaller
     ```
-    The script includes the `--enable-plugin=tk-inter` Nuitka option necessary for Tkinter applications.
 
-### GitHub Actions
+3.  **Run PyInstaller:**
+    Navigate to the project's root directory in your terminal and run the following command to build `gui.py`:
+    ```bash
+    pyinstaller --onefile --windowed --icon=favicon.ico --name=DNSCacheGUI gui.py
+    ```
+    *   `--onefile`: Bundles everything into a single executable file.
+    *   `--windowed`: Creates a windowed application (no command-line console appears when run). This is recommended for GUI applications.
+    *   `--icon=favicon.ico`: Sets the application icon (make sure `favicon.ico` is in the project root or provide the correct path).
+    *   `--name=DNSCacheGUI`: Specifies the name of the output executable.
 
-The repository includes a GitHub Actions workflow in `.github/workflows/build.yml` that automatically builds the application for Windows, Linux, and macOS when a new tag (e.g., `v1.1.0`) is pushed. The resulting executables/bundles are uploaded as release artifacts.
+    After the build process completes, you will find the executable (`DNSCacheGUI.exe` on Windows) inside a `dist` folder in your project directory. Other temporary build files will be in a `build` folder.
 
 ## ⚠️ Important Notes
 
