@@ -138,11 +138,10 @@ python dns_cache_tool.py
 3.  **运行 PyInstaller:**
     在终端中导航到项目的根目录，并运行以下命令来构建 `gui.py`：
     ```bash
-    pyinstaller --onefile --windowed --icon=favicon.ico --name=DNSCacheGUI gui.py
+    pyinstaller --onefile --windowed --name=DNSCacheGUI gui.py
     ```
     *   `--onefile`: 将所有内容打包到单个可执行文件中。
     *   `--windowed`: 创建一个窗口化应用程序 (运行时不出现命令行控制台)。推荐用于 GUI 应用程序。
-    *   `--icon=favicon.ico`: 设置应用程序图标 (请确保 `favicon.ico` 文件位于项目根目录，或提供正确的路径)。
     *   `--name=DNSCacheGUI`: 指定输出可执行文件的名称。
 
     构建过程完成后，您将在项目目录下的 `dist` 文件夹中找到可执行文件 (`DNSCacheGUI.exe` on Windows)。其他临时构建文件将位于 `build` 文件夹中。

@@ -42,7 +42,7 @@ jobs:
       # MOD: 已将Nuitka构建步骤替换为PyInstaller构建步骤
       - name: 使用PyInstaller构建 # MOD: Translated
         run: |
-          pyinstaller --onefile --windowed --icon=favicon.ico --name=DNSCacheGUI --distpath ./dist --workpath ./build --clean gui.py
+          pyinstaller --onefile --windowed --name=DNSCacheGUI --distpath ./dist --workpath ./build --clean gui.py
 
       - name: 创建版本信息文件 # MOD: Translated
         run: |
