@@ -10,7 +10,5 @@ soupsieve>=1.2          # beautifulsoup4的依赖
 setuptools>=42.0.0
 wheel>=0.37.0 
 
-# Nuitka打包相关依赖
-nuitka>=1.5.0           # Python编译器，用于生成可执行文件
-ordered-set>=4.0.2      # Nuitka依赖
-zstandard>=0.15.2       # 用于压缩
+# PyInstaller打包相关依赖 (如果需要特定版本，可以在这里指定)
+# pyinstaller>=5.0 # PyInstaller 通常通过 pip install pyinstaller 安装，不一定需要在此处固定版本
